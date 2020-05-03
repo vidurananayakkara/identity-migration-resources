@@ -29,8 +29,8 @@ public class OAuthDAO {
     private static OAuthDAO instance = new OAuthDAO();
 
     private static final String UPDATE_TOKENS_OF_LOCAL_USERS = "UPDATE IDN_OAUTH2_ACCESS_TOKEN " +
-            "SET IDP_ID = (SELECT ID FROM IDP " +
-            "WHERE IDN_OAUTH2_ACCESS_TOKEN.TENANT_ID =  IDP.TENANT_ID AND IDP.NAME = \'LOCAL\') " +
+            "SET IDP_ID = IFNULL((SELECT ID FROM IDP " +
+            "WHERE IDN_OAUTH2_ACCESS_TOKEN.TENANT_ID =  IDP.TENANT_ID AND IDP.NAME = \'LOCAL\'),-1) " +
             "WHERE USER_DOMAIN != \'FEDERATED\'";
 
     private static final String UPDATE_AUTH_CODES_OF_LOCAL_USERS = "UPDATE IDN_OAUTH2_AUTHORIZATION_CODE " +

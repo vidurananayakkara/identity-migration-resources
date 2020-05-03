@@ -12,6 +12,11 @@ ALTER TABLE IDN_OAUTH2_AUTHORIZATION_CODE
 
 DROP PROCEDURE IF EXISTS add_column_if_not_exists_with_default_val;
 
+SET @SAVE_sql_mode = @@sql_mode;
+SET SQL_MODE='ALLOW_INVALID_DATES';
+
+DELIMITER //
+
 CREATE PROCEDURE add_column_if_not_exists_with_default_val(tbl_name VARCHAR(64), clmn_name VARCHAR(64),
                                                            data_type VARCHAR(64), default_val VARCHAR(64))
 BEGIN
@@ -22,9 +27,11 @@ BEGIN
     PREPARE statement FROM @query; EXECUTE statement;
     SET @query = CONCAT('ALTER TABLE ', tbl_name, ' ALTER COLUMN ', clmn_name, ' drop default');
     PREPARE statement FROM @query; EXECUTE statement;
-END;
+END; //
 
-CALL add_column_if_not_exists_with_default_val('IDN_OAUTH2_AUTHORIZATION_CODE', 'IDP_ID', 'int', '-1');
+DELIMITER ;
+
+CALL add_column_if_not_exists_with_default_val('IDN_OAUTH2_AUTHORIZATION_CODE', 'IDP_ID', 'INT', '-1');
 
 CALL add_column_if_not_exists_with_default_val('IDN_OAUTH2_ACCESS_TOKEN', 'IDP_ID', 'INT', '-1');
 
@@ -38,6 +45,8 @@ ALTER TABLE IDN_OAUTH2_ACCESS_TOKEN
 ALTER TABLE IDN_OAUTH2_ACCESS_TOKEN
     ADD CONSTRAINT CON_APP_KEY UNIQUE (CONSUMER_KEY_ID, AUTHZ_USER, TENANT_ID, USER_DOMAIN, USER_TYPE, TOKEN_SCOPE_HASH,
                                        TOKEN_STATE, TOKEN_STATE_ID, IDP_ID);
+
+SET @@sql_mode = @SAVE_sql_mode;
 
 CREATE TABLE IF NOT EXISTS IDN_AUTH_USER
 (
