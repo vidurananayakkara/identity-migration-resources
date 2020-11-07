@@ -22,9 +22,12 @@ public class OAuthDAO {
             "LIMIT ? OFFSET ?";
     private static final String RETRIEVE_PAGINATED_TOKENS_OTHER =
             "SELECT ACCESS_TOKEN, REFRESH_TOKEN, TOKEN_ID, ACCESS_TOKEN_HASH, REFRESH_TOKEN_HASH " +
+            "FROM ( " +
+            "SELECT ROWNUM OFFSET, ACCESS_TOKEN, REFRESH_TOKEN, TOKEN_ID, ACCESS_TOKEN_HASH, REFRESH_TOKEN_HASH " +
             "FROM IDN_OAUTH2_ACCESS_TOKEN " +
             "ORDER BY TOKEN_ID " +
-            "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            ") " +
+            "WHERE OFFSET > ? AND ROWNUM <= ?";
 
     public static final String RETRIEVE_ALL_AUTHORIZATION_CODES_MYSQL =
             "SELECT AUTHORIZATION_CODE, CODE_ID, AUTHORIZATION_CODE_HASH " +
@@ -33,9 +36,12 @@ public class OAuthDAO {
             "LIMIT ? OFFSET ?";
     public static final String RETRIEVE_ALL_AUTHORIZATION_CODES_OTHER =
             "SELECT AUTHORIZATION_CODE, CODE_ID, AUTHORIZATION_CODE_HASH " +
+            "FROM ( " +
+            "SELECT ROWNUM OFFSET, AUTHORIZATION_CODE, CODE_ID, AUTHORIZATION_CODE_HASH " +
             "FROM IDN_OAUTH2_AUTHORIZATION_CODE " +
             "ORDER BY CODE_ID " +
-            "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            ") " +
+            "WHERE OFFSET > ? AND ROWNUM <= ?";
 
     public static final String UPDATE_ACCESS_TOKEN = "UPDATE IDN_OAUTH2_ACCESS_TOKEN SET ACCESS_TOKEN=?, " +
             "REFRESH_TOKEN=?, ACCESS_TOKEN_HASH=?, REFRESH_TOKEN_HASH=? WHERE TOKEN_ID=?";
